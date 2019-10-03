@@ -8,6 +8,8 @@ newdraw
 *.swp
 
 # Misc
+*.ans
+*.ansi
 *.log
 *.tar.gz
 
