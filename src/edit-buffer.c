@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "edit-buffer.h"
 #include "error.h"
@@ -75,7 +76,7 @@ struct edit_buffer * edit_buffer_create(unsigned long width,
 	ret->max_height = 0;
 	ret->start_x = 0;
 	ret->start_y = 0;
-	ret->filepath = filepath;
+	ret->filepath = (filepath != NULL) ? strdup(filepath) : NULL;
 	
 	return ret;
 }
