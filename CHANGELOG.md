@@ -1,6 +1,8 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+This is a fork of https://github.com/richinseattle/newdraw
+
+All notable changes to the original project will be documented in this file.
 
 
 ## 2019-10-03
