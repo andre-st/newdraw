@@ -30,6 +30,6 @@ all: newdraw
 
 newdraw: $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NEW_DRAW) $(LIBS)
-	mv newdraw .. && mkdir -p ../art
+	mv newdraw .. 
 clean:
 	rm -f $(NEW_DRAW) core *.o

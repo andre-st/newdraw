@@ -38,6 +38,6 @@ void screen_print_status(struct edit_buffer *, struct screen *,
 			 struct editor_context *, char *);
 void screen_move(unsigned long, unsigned long);
 void screen_redraw(void);
-char * screen_save_file_dialog(struct screen *);
+char * screen_save_file_dialog(struct screen *, const char *);
 
 #endif

@@ -31,9 +31,10 @@ struct edit_buffer {
 	unsigned long width;
 	unsigned long max_height;
 	unsigned int *buffer;
+	char         *filepath;
 };
 
-struct edit_buffer * edit_buffer_create(unsigned long, unsigned long);
+struct edit_buffer * edit_buffer_create(unsigned long, unsigned long, const char *);
 void edit_buffer_release(struct edit_buffer *);
 void edit_buffer_clear(struct edit_buffer *);
 void edit_buffer_draw_to_screen(struct edit_buffer *, struct screen *);

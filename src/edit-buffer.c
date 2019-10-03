@@ -62,7 +62,7 @@ void edit_buffer_clear(struct edit_buffer *buf)
 }
 
 struct edit_buffer * edit_buffer_create(unsigned long width,
-					unsigned long height)
+					unsigned long height, const char *filepath)
 {
 	struct edit_buffer * ret = malloc(sizeof(struct edit_buffer));
 
@@ -75,7 +75,8 @@ struct edit_buffer * edit_buffer_create(unsigned long width,
 	ret->max_height = 0;
 	ret->start_x = 0;
 	ret->start_y = 0;
-
+	ret->filepath = filepath;
+	
 	return ret;
 }
 

@@ -292,29 +292,36 @@ static bool cmd_change_color(int ch, struct editor_context * ctx)
 
 static void cmd_save_file(struct screen * scr, struct edit_buffer * buf)
 {
-	char * filepath = screen_save_file_dialog(scr);
-
-	if (filepath) {
-		char *filename = strrchr(filepath, '/');
-		if(!filename) { filename = filepath; }
+	char * new_filepath = screen_save_file_dialog(scr, buf->filepath);
+	
+	if (new_filepath) {
+		// Original version would save a same-named copy to the 'art' directory,
+		// but we want modify the original files in diverse locations,
+		// with a backup of the old file.
+		if (buf->filepath != NULL)
+		{
+			size_t len = strlen(buf->filepath);
+			char *bakpath = malloc(len + 2);
+			strcpy(bakpath, buf->filepath);
+			bakpath[len] = '~';
+			bakpath[len + 1] = '\0';
+			rename(buf->filepath, bakpath);
+			free(bakpath);
+		}
 		
-		char *p = filename;
-		while((p = strchr(p, '\\'))) { *p = '-'; }
-
-		char * save_path = "./art";
-		char *output_path = calloc(1, strlen(filename) + strlen(save_path) + 2);
-		sprintf(output_path, "%s/%s", save_path, filename);
-		printf("\n%s\n", output_path);
-
-		FILE *output = fopen(output_path, "w");
+		FILE *output = fopen(new_filepath, "w");	
+		
 		if (!output)
-			error("Could not open '%s' for writing.", filename);
-
+			error("Could not open '%s' for writing.", new_filepath);
+		
 		ans_write(output, buf);
-
+		
+		if (buf->filepath != NULL)
+			free(buf->filepath);
+		
+		buf->filepath = new_filepath;
+		
 		fclose(output);
-		free(output_path);
-		free(filepath);
 	}
 }
 
@@ -404,14 +411,16 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	char *filepath = argv[optind];  // Might be NULL
+	
 	struct edit_buffer *buf =
-		edit_buffer_create(edit_buffer_cols, edit_buffer_rows);
+		edit_buffer_create(edit_buffer_cols, edit_buffer_rows, filepath);
 	edit_buffer_clear(buf);
-
-	if (argv[optind] != NULL) {
-		FILE *input = fopen(argv[optind], "r");
+	
+	if (filepath != NULL) {
+		FILE *input = fopen(filepath, "r");
 		if (input) {
-			if (bin_file_check(argv[optind]))
+			if (bin_file_check(filepath))
 				bin_file_read(input, buf, buf->width);
 			else
 				ans_read(input, buf);

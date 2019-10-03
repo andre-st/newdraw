@@ -197,7 +197,7 @@ static char * trim_trailing(const char * str)
 	return ret;
 }
 
-char * screen_save_file_dialog(struct screen * scr)
+char * screen_save_file_dialog(struct screen * scr, const char * default_filepath)
 {
 	assume_default_colors(7, COLOR_BLACK);
 
@@ -214,7 +214,11 @@ char * screen_save_file_dialog(struct screen * scr)
 	fields[1] = NULL;
 
 	set_field_back(fields[0], A_UNDERLINE);
-
+	set_field_opts(fields[0], O_VISIBLE | O_PUBLIC | O_EDIT | O_ACTIVE);
+	
+	if (default_filepath != NULL)
+		set_field_buffer(fields[0], 0, default_filepath);
+	
 	FORM * form = new_form(fields);
 	post_form(form);
 	refresh();
