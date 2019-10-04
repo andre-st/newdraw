@@ -290,24 +290,45 @@ static bool cmd_change_color(int ch, struct editor_context * ctx)
 	return true;
 }
 
+void copy_file(const char * filepath_in, const char * filepath_out)
+{
+	FILE *fh_in  = fopen(filepath_in,  "r");
+	FILE *fh_out = fopen(filepath_out, "w");
+	if (fh_in == NULL || fh_out == NULL)
+		error("Could not copy file");
+	
+	char ch;
+	while ((ch = fgetc(fh_in)) != EOF)
+		fputc(ch, fh_out);
+	
+	fclose(fh_in);
+	fclose(fh_out);
+}
+
+void backup_file(const char * filepath)
+{
+	size_t len = strlen(filepath);
+	char *bakpath = malloc(len + 2);
+	if (bakpath == NULL)
+		error("Could not allocate memory for the backup filename.");
+	
+	strcpy(bakpath, filepath);
+	bakpath[len] = '~';
+	bakpath[len + 1] = '\0';
+	copy_file(filepath, bakpath);
+	free(bakpath);
+}
+
 static void cmd_save_file(struct screen * scr, struct edit_buffer * buf)
 {
 	char * new_filepath = screen_save_file_dialog(scr, buf->filepath);
 	
 	if (new_filepath) {
-		// Original version would save a same-named copy to the 'art' directory,
-		// but we want modify the original files in diverse locations,
-		// with a backup of the old file.
+		// Original version would create a same-named file in the 
+		// 'art' directory, but we want modify the original files 
+		// in diverse locations, with a backup of the old file.
 		if (buf->filepath != NULL)
-		{
-			size_t len = strlen(buf->filepath);
-			char *bakpath = malloc(len + 2);
-			strcpy(bakpath, buf->filepath);
-			bakpath[len] = '~';
-			bakpath[len + 1] = '\0';
-			rename(buf->filepath, bakpath);
-			free(bakpath);
-		}
+			backup_file(buf->filepath);
 		
 		FILE *output = fopen(new_filepath, "w");	
 		
